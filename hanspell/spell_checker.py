@@ -18,16 +18,16 @@ from .constants import CheckResult
 _agent = requests.Session()
 PY3 = sys.version_info[0] == 3
 
-def _remove_tags(text):
 
-    text = u'<content>{}</content>'.format(text).replace('<br>','')
+def _remove_tags(text):
+    text = u'<content>{}</content>'.format(text).replace('<br>', '')
     if not PY3:
         text = text.encode('utf-8')
-
 
     result = ''.join(ET.fromstring(text).itertext())
 
     return result
+
 
 def check(text):
     """
@@ -45,18 +45,17 @@ def check(text):
         return Checked(result=False)
 
     payload = {
-        '_callback':'window.__jindo2_callback._spellingCheck_0',
+        '_callback': 'window.__jindo2_callback._spellingCheck_0',
         'q': text
     }
 
     headers = {
-        'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
-        'referer': ' https://search.naver.com/ '
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+        'referer': 'https://search.naver.com/'
     }
 
-
     start_time = time.time()
-    r = _agent.get(base_url, params=payload, headers = headers)
+    r = _agent.get(base_url, params=payload, headers=headers)
     passed_time = time.time() - start_time
 
     r = r.text[42:-2]
@@ -76,9 +75,9 @@ def check(text):
     # ElementTree의 iter()를 써서 더 좋게 할 수 있는 방법이 있지만
     # 이 짧은 코드에 굳이 그렇게 할 필요성이 없으므로 일단 문자열을 치환하는 방법으로 작성.
     html = html.replace('<span class=\'re_green\'>', '<green>') \
-               .replace('<span class=\'re_red\'>', '<red>') \
-               .replace('<span class=\'re_purple\'>', '<purple>') \
-               .replace('</span>', '<end>')
+        .replace('<span class=\'re_red\'>', '<red>') \
+        .replace('<span class=\'re_purple\'>', '<purple>') \
+        .replace('</span>', '<end>')
     items = html.split(' ')
     words = []
     tmp = ''
@@ -88,7 +87,7 @@ def check(text):
             tmp = word[:pos]
         elif tmp != '':
             word = u'{}{}'.format(tmp, word)
-        
+
         if word[-5:] == '<end>':
             word = word.replace('<end>', '')
             tmp = ''
